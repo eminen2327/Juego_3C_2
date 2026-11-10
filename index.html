@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Evil 2D - Split Screen Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body class="flex items-center justify-center min-h-screen bg-zinc-950">
+
+    <div id="contenedorJuego"
+        class="relative w-[1000px] h-[650px] bg-black border-4 border-red-950 shadow-2xl overflow-hidden rounded-lg">
+
+        <!-- CONTENEDOR PRINCIPAL DE PANTALLA DIVIDIDA (SPLIT-SCREEN) -->
+        <div id="contenedorPantallaDividida" class="absolute inset-0 flex w-full h-full">
+            
+            <!-- LADO JUGADOR 1 (IZQUIERDA - CONTROLES WASD) -->
+            <div id="viewportJ1" class="relative w-1/2 h-full border-r-2 border-red-950 overflow-hidden">
+                <canvas id="canvasJ1" width="500" height="650" class="pixelated absolute inset-0 w-full h-full"></canvas>
+                
+                <!-- HUD JUGADOR 1 -->
+                <div class="absolute top-3 left-3 right-3 flex justify-between items-start pointer-events-none z-20">
+                    <div class="re-panel p-2 rounded font-mono pointer-events-auto flex flex-col gap-0.5 bg-black/80 border border-red-900 min-w-[150px]">
+                        <div class="flex justify-between items-center border-b border-red-900/50 pb-0.5 gap-2">
+                            <span class="text-red-500 font-pixel text-[10px]">J1 (WASD)</span>
+                            <span id="txtSalud1" class="salud-fine font-pixel text-[10px]">FINE (100%)</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-0.5 text-[10px]">
+                            <span class="text-gray-400">EQUIPADO:</span>
+                            <span id="txtArma1" class="text-red-400 font-bold ml-2">Navaja</span>
+                        </div>
+                        <div class="flex justify-between items-center text-[10px] text-amber-500 font-bold">
+                            <span>MUNICIÓN:</span>
+                            <span id="txtMunicion1">∞</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANTALLA DERROTA INDIVIDUAL JUGADOR 1 -->
+                <div id="gameOverJ1" class="hidden absolute inset-0 bg-red-950/90 z-40 flex flex-col items-center justify-center p-4 text-center">
+                    <h2 class="font-pixel text-3xl text-red-600 mb-2 tracking-widest animate-pulse">YOU DIED</h2>
+                    <p class="font-mono text-gray-300 text-xs mb-4">EL JUGADOR 1 HA CAÍDO</p>
+                    <span class="text-[10px] text-gray-500 font-mono">Esperando al compañero...</span>
+                </div>
+
+                <!-- INVENTARIO JUGADOR 1 [Q] -->
+                <div id="modalInventarioJ1" class="hidden absolute inset-4 bg-black/90 border border-red-900 z-30 flex flex-col p-3 rounded">
+                    <div class="flex justify-between items-center border-b border-red-800 pb-1 mb-2">
+                        <h3 class="font-pixel text-red-600 text-xs">INVENTARIO J1 [Q]</h3>
+                        <button onclick="toggleInventario(1)" class="text-red-500 font-bold hover:text-white">&times;</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 my-auto" id="gridSlotsJ1"></div>
+                    <div class="text-[10px] text-gray-400 font-mono bg-zinc-950 p-2 rounded border border-zinc-800 h-10 flex items-center mb-2" id="descItemJ1">
+                        Usa WASD para moverte y E para usar/equipar.
+                    </div>
+                </div>
+            </div>
+
+            <!-- LADO JUGADOR 2 (DERECHA - TECLADO NUMÉRICO Y FLECHAS) -->
+            <div id="viewportJ2" class="relative w-1/2 h-full border-l-2 border-red-950 overflow-hidden">
+                <canvas id="canvasJ2" width="500" height="650" class="pixelated absolute inset-0 w-full h-full"></canvas>
+
+                <!-- HUD JUGADOR 2 -->
+                <div class="absolute top-3 left-3 right-3 flex justify-between items-start pointer-events-none z-20">
+                    <div class="re-panel p-2 rounded font-mono pointer-events-auto flex flex-col gap-0.5 bg-black/80 border border-blue-900 min-w-[150px]">
+                        <div class="flex justify-between items-center border-b border-blue-900/50 pb-0.5 gap-2">
+                            <span class="text-blue-400 font-pixel text-[10px]">J2 (FLECHAS)</span>
+                            <span id="txtSalud2" class="salud-fine font-pixel text-[10px]">FINE (100%)</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-0.5 text-[10px]">
+                            <span class="text-gray-400">EQUIPADO:</span>
+                            <span id="txtArma2" class="text-blue-400 font-bold ml-2">Navaja</span>
+                        </div>
+                        <div class="flex justify-between items-center text-[10px] text-amber-500 font-bold">
+                            <span>MUNICIÓN:</span>
+                            <span id="txtMunicion2">∞</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANTALLA DERROTA INDIVIDUAL JUGADOR 2 -->
+                <div id="gameOverJ2" class="hidden absolute inset-0 bg-red-950/90 z-40 flex flex-col items-center justify-center p-4 text-center">
+                    <h2 class="font-pixel text-3xl text-red-600 mb-2 tracking-widest animate-pulse">YOU DIED</h2>
+                    <p class="font-mono text-gray-300 text-xs mb-4">EL JUGADOR 2 HA CAÍDO</p>
+                    <span class="text-[10px] text-gray-500 font-mono">Esperando al compañero...</span>
+                </div>
+
+                <!-- INVENTARIO JUGADOR 2 [I] -->
+                <div id="modalInventarioJ2" class="hidden absolute inset-4 bg-black/90 border border-blue-900 z-30 flex flex-col p-3 rounded">
+                    <div class="flex justify-between items-center border-b border-blue-800 pb-1 mb-2">
+                        <h3 class="font-pixel text-blue-400 text-xs">INVENTARIO J2 [I]</h3>
+                        <button onclick="toggleInventario(2)" class="text-blue-500 font-bold hover:text-white">&times;</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 my-auto" id="gridSlotsJ2"></div>
+                    <div class="text-[10px] text-gray-400 font-mono bg-zinc-950 p-2 rounded border border-zinc-800 h-10 flex items-center mb-2" id="descItemJ2">
+                        Usa Flechas para moverte y Supr para usar/equipar.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PANTALLA DE GAME OVER GLOBAL (CUANDO AMBOS MUEREN) -->
+        <div id="pantallaGameOverGlobal" class="hidden absolute inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-6 text-center">
+            <h1 class="font-pixel text-4xl text-red-600 mb-4 tracking-widest animate-pulse">YOU DIED</h1>
+            <p class="font-mono text-gray-300 text-base mb-8">AMBOS SOBREVIVIENTES HAN CAÍDO EN COMBATE</p>
+            <button onclick="regresarAlMenu()" class="re-btn font-pixel text-xs py-3 px-8 rounded">
+                IR AL MENÚ PRINCIPAL
+            </button>
+        </div>
+
+        <!-- INDICADOR CENTRADO DE ZONA DE JUEGO -->
+        <div class="absolute top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+            <div class="re-panel px-3 py-1 rounded text-center bg-black/90 border border-red-900">
+                <span class="text-[9px] text-zinc-400 block">ZONA</span>
+                <div id="txtZona" class="text-red-400 font-bold text-xs font-pixel">SUPERMERCADO</div>
+            </div>
+        </div>
+
+        <!-- BARRA DE SALUD DEL JEFE -->
+        <div id="hudJefe" class="hidden absolute top-16 right-4 left-4 max-w-md mx-auto z-20 pointer-events-none">
+            <div class="re-panel p-2 rounded text-center bg-black/90 border border-red-900">
+                <div id="lblNombreJefe" class="font-pixel text-xs text-red-600 mb-1 tracking-widest">TYRANT NEMESIS T-103</div>
+                <div class="w-full h-3 bg-zinc-950 border border-red-800 rounded overflow-hidden">
+                    <div id="fillVidaJefe" class="h-full bg-red-600 transition-all duration-200" style="width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA VICTORIA -->
+        <div id="pantallaVictoria" class="hidden absolute inset-0 bg-black z-50 flex flex-col items-center justify-center p-6 text-center">
+            <h1 class="font-pixel text-2xl md:text-4xl texto-sangre mb-6 leading-relaxed">
+                HAN VENCIDO AL RESIDENT EVIL
+            </h1>
+            <p class="font-mono text-gray-400 text-lg mb-8 max-w-md">
+                Ambos sobrevivientes derrotaron al Tyrant y lograron escapar con vida de Japón.
+            </p>
+            <button onclick="location.reload()" class="re-btn font-pixel text-sm py-3 px-8 rounded">
+                IR AL MENÚ PRINCIPAL
+            </button>
+        </div>
+
+        <!-- MENÚ PRINCIPAL DEL JUEGO -->
+        <div id="pantallaMenu" class="absolute inset-0 bg-black bg-opacity-95 flex flex-col items-center justify-center p-6 z-50">
+            <div class="ojo-container mb-6">
+                <div class="venas-ojo"></div>
+                <div class="pupila"></div>
+                <div class="ojo-piel"></div>
+                <div class="ojo-parpado"></div>
+            </div>
+
+            <h1 class="titulo-pelicula text-4xl md:text-5xl text-center mb-2">
+                RESIDENT EVIL
+            </h1>
+            <h2 class="font-pixel text-xs text-red-600 mb-8 tracking-[0.4em] uppercase text-shadow">
+                — JAPAN ESCAPE 2D (SPLIT-SCREEN) —
+            </h2>
+
+            <div class="flex flex-col gap-4 w-64">
+                <button onclick="confirmarInicioJuego()" class="re-btn font-pixel py-3 px-6 text-sm rounded">
+                    EMPEZAR PARTIDA
+                </button>
+                <button onclick="toggleControles()" class="re-btn font-pixel py-2 px-6 text-xs rounded text-gray-300 border-gray-700">
+                    CONTROLES [2P]
+                </button>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE PERSONALIZACIÓN -->
+        <div id="pantallaCustom" class="hidden absolute inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-6">
+            <h2 class="font-pixel text-xl text-red-600 mb-6">PERSONALIZAR SOBREVIVIENTES</h2>
+
+            <div class="flex flex-col md:flex-row gap-8 items-center justify-center w-full max-w-xl bg-zinc-900/90 p-6 border-2 border-red-900 rounded-lg">
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-32 h-32 bg-zinc-950 border-2 border-red-800 rounded flex items-center justify-center">
+                        <canvas id="canvasPreview" width="64" height="64" class="pixelated w-24 h-24"></canvas>
+                    </div>
+                    <span class="text-xs text-gray-400 font-mono">VISTA PREVIA</span>
+                </div>
+
+                <div class="flex flex-col gap-3 text-sm w-full font-mono">
+                    <div class="flex justify-between items-center">
+                        <label class="text-red-400">Pelo:</label>
+                        <input type="color" id="colorPelo" value="#4a2e1b" onchange="actualizarCustom()" class="bg-transparent cursor-pointer w-10 h-8">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <label class="text-red-400">Piel:</label>
+                        <input type="color" id="colorPiel" value="#ffdbac" onchange="actualizarCustom()" class="bg-transparent cursor-pointer w-10 h-8">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <label class="text-red-400">Camiseta J1:</label>
+                        <input type="color" id="colorCamisa" value="#1e40af" onchange="actualizarCustom()" class="bg-transparent cursor-pointer w-10 h-8">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <label class="text-red-400">Pantalón:</label>
+                        <input type="color" id="colorPantalon" value="#374151" onchange="actualizarCustom()" class="bg-transparent cursor-pointer w-10 h-8">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="confirmarInicioJuego()" class="re-btn font-pixel py-3 px-8 text-sm rounded mt-6">
+                COMENZAR SOBREVIVENCIA
+            </button>
+        </div>
+
+        <!-- GUÍA DE CONTROLES MODAL -->
+        <div id="modalControles" class="hidden absolute inset-0 bg-black/90 z-50 flex items-center justify-center p-6">
+            <div class="re-panel p-6 rounded max-w-md w-full font-mono text-sm space-y-3 bg-black border border-red-900">
+                <h3 class="font-pixel text-red-600 text-xs mb-3 text-center">GUÍA DE CONTROLES</h3>
+                <p><span class="text-red-400 font-bold">Jugador 1:</span> WASD (Moverse) | ESPACIO (Atacar) | E (Examinar / Usar) | Q (Inventario)</p>
+                <p><span class="text-blue-400 font-bold">Jugador 2:</span> Flechas (Moverse) | Ins (Atacar) | Supr (Examinar / Usar) | I / Enter Numpad (Inventario)</p>
+                <p class="text-xs text-amber-400 mt-2">* Al abrir el inventario entras en estado de invulnerabilidad temporal.</p>
+                <button onclick="toggleControles()" class="re-btn font-pixel text-xs py-2 w-full mt-4 rounded">CERRAR</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="static/script.js"></script>
+</body>
+
+</html>

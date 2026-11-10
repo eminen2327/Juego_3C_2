@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap');
+
+* {
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    background-color: #020202;
+    color: #d1d5db;
+    font-family: 'VT323', monospace;
+    overflow: hidden;
+}
+
+.pixelated {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    image-rendering: -moz-crisp-edges;
+}
+
+.font-pixel {
+    font-family: 'Press Start 2P', cursive;
+}
+
+/* OJO DE MENÚ TERRORÍFICO GIGANTE (ESTILO RE REVELATIONS 2) */
+.ojo-container {
+    position: relative;
+    width: 380px;
+    height: 220px;
+    background: #080101;
+    border-radius: 50%;
+    border: 8px solid #5c0000;
+    box-shadow: 0 0 70px #ff0000, inset 0 0 50px #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    outline: 18px solid #1a0303;
+    outline-offset: -2px;
+}
+
+.ojo-piel {
+    position: absolute;
+    inset: -30px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 65px #000, 0 0 40px #4a0303;
+    background: radial-gradient(circle, transparent 40%, #3a0808 70%, #0d0101 100%);
+    pointer-events: none;
+    z-index: 5;
+}
+
+.ojo-parpado {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #3d0505 0%, #0f0101 50%, #3d0505 100%);
+    z-index: 6;
+    animation: pestaneoZombi 5s infinite ease-in-out;
+    transform-origin: center;
+}
+
+.pupila {
+    width: 110px;
+    height: 110px;
+    background: radial-gradient(circle, #000 20%, #059669 45%, #047857 65%, #880000 85%, #280000 100%);
+    border-radius: 50%;
+    border: 4px solid #10b981;
+    position: relative;
+    box-shadow: 0 0 35px #059669, inset 0 0 15px #000;
+    animation: miradaOjo 6s infinite ease-in-out;
+}
+
+.pupila::after {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: 18px;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    box-shadow: 0 0 12px #fff;
+}
+
+.venas-ojo {
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(circle, transparent 30%, rgba(220, 38, 38, 0.85) 85%),
+        repeating-conic-gradient(from 0deg, rgba(185, 28, 28, 0.7) 0deg 10deg, transparent 10deg 25deg);
+    border-radius: 50%;
+}
+
+@keyframes pestaneoZombi {
+    0%, 42%, 46%, 92%, 96%, 100% { transform: scaleY(0.05); }
+    44%, 94% { transform: scaleY(1); }
+}
+
+@keyframes miradaOjo {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    20% { transform: translate(-26px, -8px) scale(1.05); }
+    50% { transform: translate(22px, 10px) scale(0.95); }
+    75% { transform: translate(12px, -14px) scale(1.08); }
+}
+
+.titulo-pelicula {
+    font-family: 'Press Start 2P', cursive;
+    color: #e11d48;
+    letter-spacing: 6px;
+    text-shadow: 
+        0 0 10px #ff0000,
+        0 0 25px #880000,
+        4px 4px 0px #000;
+    animation: temblorTerror 0.15s infinite alternate;
+}
+
+@keyframes temblorTerror {
+    0% { transform: translate(0, 0) skewX(0deg); }
+    50% { transform: translate(-1px, 1px) skewX(-0.5deg); }
+    100% { transform: translate(1px, -1px) skewX(0.5deg); }
+}
+
+.re-panel {
+    background: rgba(8, 8, 10, 0.95);
+    border: 3px double #8b0000;
+    box-shadow: 0 0 15px rgba(0,0,0,0.9), inset 0 0 10px rgba(139, 0, 0, 0.4);
+}
+
+.re-btn {
+    background: linear-gradient(180deg, #220b0b 0%, #080303 100%);
+    border: 2px solid #8b0000;
+    color: #ef4444;
+    transition: all 0.2s;
+    text-shadow: 0 0 5px #ff0000;
+}
+
+.re-btn:hover, .re-btn:active {
+    background: #8b0000;
+    color: #ffffff;
+    box-shadow: 0 0 18px #ff0000;
+    transform: translateY(-2px);
+}
+
+.texto-sangre {
+    color: #b91c1c;
+    text-shadow: 3px 3px 0px #000, 0 0 20px #ff0000;
+    animation: parpadeoSangriento 1.2s infinite alternate;
+}
+
+@keyframes parpadeoSangriento {
+    0% { opacity: 0.8; filter: drop-shadow(0 0 5px #ff0000); }
+    100% { opacity: 1; filter: drop-shadow(0 0 20px #ff0000); }
+}
+
+.salud-fine { color: #22c55e; text-shadow: 0 0 8px #22c55e; }
+.salud-caution { color: #eab308; text-shadow: 0 0 8px #eab308; }
+.salud-danger { color: #ef4444; text-shadow: 0 0 10px #ef4444; animation: blinkDanger 0.8s infinite alternate; }
+
+@keyframes blinkDanger {
+    from { opacity: 1; }
+    to { opacity: 0.3; }
+}
+
+.slot-item {
+    background: #111;
+    border: 2px solid #444;
+    transition: all 0.15s;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slot-item:hover, .slot-item.seleccionado {
+    border-color: #ef4444;
+    background: #280909;
+    box-shadow: 0 0 10px #ff0000;
+}
+
+.screen-shake {
+    animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-2px, 0, 0); }
+    20%, 80% { transform: translate3d(3px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
+    40%, 60% { transform: translate3d(5px, 0, 0); }
+} 
+
+.text-shadow-red {
+    text-shadow: 0 0 15px #ff0000, 3px 3px 0px #000;
+}
